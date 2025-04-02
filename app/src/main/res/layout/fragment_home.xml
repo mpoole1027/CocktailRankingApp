@@ -1,0 +1,68 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Centered container -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="center">
+
+        <!-- Cocktail 1 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginEnd="24dp">
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/cocktail1"
+                android:contentDescription="Cocktail 1" />
+
+            <Button
+                android:layout_width="160dp"
+                android:layout_height="48dp"
+                android:text="Info"
+                android:layout_marginTop="12dp" />
+
+            <Button
+                android:layout_width="160dp"
+                android:layout_height="48dp"
+                android:text="Select"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- Cocktail 2 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/cocktail2"
+                android:contentDescription="Cocktail 2" />
+
+            <Button
+                android:layout_width="160dp"
+                android:layout_height="48dp"
+                android:text="Info"
+                android:layout_marginTop="12dp" />
+
+            <Button
+                android:layout_width="160dp"
+                android:layout_height="48dp"
+                android:text="Select"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
