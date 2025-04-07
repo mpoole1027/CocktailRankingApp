@@ -7,13 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.cocktailranking.R
 
-class HomeFragment : Fragment() {
+// HomeFragment displays the home screen layout
+class HomeFragment : Fragment()
+{
 
+    // Inflate the fragment_home layout for this fragment
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View?
+    {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 }

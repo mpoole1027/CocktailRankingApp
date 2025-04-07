@@ -1,4 +1,4 @@
-package com.example.cocktailranking.ui
+package com.example.cocktailranking.ui  // Package declaration
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -11,13 +11,15 @@ import com.google.android.material.navigation.NavigationView
 import com.example.cocktailranking.R
 import androidx.appcompat.app.ActionBarDrawerToggle
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity()
+{
 
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -30,8 +32,7 @@ class MainActivity : AppCompatActivity() {
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
 
         // NavController setup
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
         // AppBarConfiguration setup
@@ -53,10 +54,11 @@ class MainActivity : AppCompatActivity() {
             R.string.close_drawer
         )
         drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()  // Sync the toggle state
+        toggle.syncState()
     }
 
-    override fun onSupportNavigateUp(): Boolean {
+    override fun onSupportNavigateUp(): Boolean
+    {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 }
