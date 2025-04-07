@@ -1,4 +1,4 @@
-package com.example.cocktailranking.ui  // Package declaration
+package com.example.cocktailranking.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
