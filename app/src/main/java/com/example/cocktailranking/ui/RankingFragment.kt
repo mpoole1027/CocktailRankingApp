@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cocktailranking.R
 import com.example.cocktailranking.databinding.FragmentRankingBinding
 import com.example.cocktailranking.ui.adapter.CocktailAdapter
 import com.example.cocktailranking.viewmodel.RankingViewModel
@@ -37,7 +40,12 @@ class RankingFragment : Fragment() {
         binding.rankingRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         viewModel.topCocktails.observe(viewLifecycleOwner) { cocktails ->
-            binding.rankingRecyclerView.adapter = CocktailAdapter(cocktails)
+            binding.rankingRecyclerView.adapter = CocktailAdapter(cocktails) { cocktail ->
+                findNavController().navigate(
+                    R.id.cocktailDetailFragment,
+                    bundleOf("cocktailId" to cocktail.apiId)
+                )
+            }
         }
     }
 

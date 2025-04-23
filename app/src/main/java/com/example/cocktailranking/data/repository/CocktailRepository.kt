@@ -14,7 +14,8 @@ class CocktailRepository(
     private val dao: CocktailDao,
     private val apiService: CocktailApiService
 ) {
-    val allCocktails: Flow<List<com.example.cocktailranking.data.database.model.Cocktail>> = dao.getAllCocktails()
+    val topCocktails: Flow<List<Cocktail>> = dao.getTopCocktails()
+
 
     suspend fun fetchCocktailById(apiId: String): com.example.cocktailranking.network.model.Cocktail? {
         return withContext(Dispatchers.IO) {

@@ -7,32 +7,27 @@ import coil.load
 import com.example.cocktailranking.data.database.model.Cocktail
 import com.example.cocktailranking.databinding.ItemCocktailBinding
 
-class CocktailAdapter(private val cocktails: List<Cocktail>) :
-    RecyclerView.Adapter<CocktailAdapter.CocktailViewHolder>() {
+class CocktailAdapter(
+    private val cocktails: List<Cocktail>,
+    private val onItemClick: (Cocktail) -> Unit
+) : RecyclerView.Adapter<CocktailAdapter.CocktailViewHolder>() {
 
     inner class CocktailViewHolder(private val binding: ItemCocktailBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(cocktail: Cocktail, position: Int) {
-            // Use string resource if you want to avoid the warning
             binding.rankNumber.text = "${position + 1}."
             binding.cocktailName.text = cocktail.name
+            binding.cocktailImage.load(cocktail.thumbnailUrl)
 
-            // Load image from URL using Coil
-            binding.cocktailImage.load(cocktail.thumbnailUrl) {
-                crossfade(true)
-                placeholder(android.R.drawable.ic_menu_gallery)
-                error(android.R.drawable.ic_dialog_alert)
+            binding.root.setOnClickListener {
+                onItemClick(cocktail)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CocktailViewHolder {
-        val binding = ItemCocktailBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+        val binding = ItemCocktailBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CocktailViewHolder(binding)
     }
 
@@ -42,3 +37,4 @@ class CocktailAdapter(private val cocktails: List<Cocktail>) :
 
     override fun getItemCount(): Int = cocktails.size
 }
+
