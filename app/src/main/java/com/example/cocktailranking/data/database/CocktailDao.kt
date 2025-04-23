@@ -14,4 +14,7 @@ interface CocktailDao {
 
     @Delete
     suspend fun deleteCocktail(cocktail: Cocktail)
+
+    @Query("SELECT * FROM cocktails ORDER BY eloRating DESC LIMIT 10")
+    fun getTopCocktails(): Flow<List<Cocktail>>
 }
