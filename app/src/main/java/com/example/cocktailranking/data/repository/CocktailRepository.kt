@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlin.math.pow
 
+
+
 class CocktailRepository(
     private val dao: CocktailDao,
     private val apiService: CocktailApiService
@@ -38,6 +40,11 @@ class CocktailRepository(
         val cocktail = networkCocktail.toEntity()
         dao.insertCocktail(cocktail)
     }
+
+    suspend fun getCocktailByApiId(apiId: String): Cocktail? {
+        return dao.getCocktailByApiId(apiId)
+    }
+
 
     suspend fun updateElo(winner: Cocktail, loser: Cocktail) {
         val k = 32

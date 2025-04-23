@@ -17,4 +17,8 @@ interface CocktailDao {
 
     @Query("SELECT * FROM cocktails ORDER BY eloRating DESC LIMIT 20")
     fun getTopCocktails(): Flow<List<Cocktail>>
+
+    @Query("SELECT * FROM cocktails WHERE apiId = :apiId LIMIT 1")
+    suspend fun getCocktailByApiId(apiId: String): Cocktail?
+
 }

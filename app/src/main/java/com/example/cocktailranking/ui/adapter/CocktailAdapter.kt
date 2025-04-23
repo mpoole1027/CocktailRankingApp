@@ -17,6 +17,7 @@ class CocktailAdapter(
 
         fun bind(cocktail: Cocktail, position: Int) {
             binding.rankNumber.text = "${position + 1}."
+            binding.eloTextView.text = "ELO: ${cocktail.eloRating.toInt()}"
             binding.cocktailName.text = cocktail.name
             binding.cocktailImage.load(cocktail.thumbnailUrl)
 

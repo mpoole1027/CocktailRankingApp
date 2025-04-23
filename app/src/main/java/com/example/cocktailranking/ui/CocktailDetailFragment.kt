@@ -54,14 +54,14 @@ class CocktailDetailFragment : Fragment() {
         binding.detailInstructions.text = cocktail.strInstructions
 
         val ingredients = buildIngredientsList(cocktail)
-        binding.detailIngredients.text = "Ingredients:\n$ingredients"
+        binding.detailIngredients.text = "$ingredients"
     }
 
     private fun buildIngredientsList(c: Cocktail): String {
         return (1..15).mapNotNull { i ->
             val ing = c::class.java.getDeclaredField("strIngredient$i").apply { isAccessible = true }.get(c) as? String
             val meas = c::class.java.getDeclaredField("strMeasure$i").apply { isAccessible = true }.get(c) as? String
-            if (!ing.isNullOrEmpty()) "${meas.orEmpty()} $ing".trim() else null
+            if (!ing.isNullOrEmpty()) "• ${meas.orEmpty()} $ing".trim() else null
         }.joinToString("\n")
     }
 
