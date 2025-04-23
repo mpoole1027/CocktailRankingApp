@@ -25,5 +25,14 @@
             app:destination="@id/homeFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/cocktailDetailFragment"
+        android:name="com.example.cocktailranking.ui.CocktailDetailFragment"
+        android:label="Cocktail Details" >
+        <argument
+            android:name="cocktailId"
+            app:argType="string" />
+    </fragment>
+
 </navigation>
 

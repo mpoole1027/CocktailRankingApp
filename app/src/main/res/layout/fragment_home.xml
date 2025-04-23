@@ -1,68 +1,107 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/homeScrollView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.HomeFragment">
 
-    <!-- Centered container -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/homeContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center"
-        android:layout_gravity="center">
+        android:padding="16dp"
+        android:layout_gravity="center_horizontal">
 
-        <!-- Cocktail 1 -->
+        <!-- Cocktail 1 Section -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginEnd="24dp">
+            android:layout_marginBottom="32dp">
 
             <ImageView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:src="@drawable/cocktail1"
+                android:id="@+id/cocktailImage1"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:scaleType="centerCrop"
                 android:contentDescription="Cocktail 1" />
 
-            <Button
-                android:layout_width="160dp"
-                android:layout_height="48dp"
-                android:text="Info"
-                android:layout_marginTop="12dp" />
+            <TextView
+                android:id="@+id/cocktailName1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cocktail 1"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
 
             <Button
-                android:layout_width="160dp"
-                android:layout_height="48dp"
-                android:text="Select"
+                android:id="@+id/moreInfo1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="More Info"
                 android:layout_marginTop="8dp" />
         </LinearLayout>
 
-        <!-- Cocktail 2 -->
+        <!-- Cocktail 2 Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="32dp">
+
+            <ImageView
+                android:id="@+id/cocktailImage2"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="Cocktail 2" />
+
+            <TextView
+                android:id="@+id/cocktailName2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cocktail 2"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/moreInfo2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="More Info"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- Winner Buttons (Optional) -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <ImageView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:src="@drawable/cocktail2"
-                android:contentDescription="Cocktail 2" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
 
             <Button
-                android:layout_width="160dp"
-                android:layout_height="48dp"
-                android:text="Info"
-                android:layout_marginTop="12dp" />
+                android:id="@+id/buttonSelect1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vote Cocktail 1" />
+
+            <View
+                android:layout_width="16dp"
+                android:layout_height="0dp" />
 
             <Button
-                android:layout_width="160dp"
-                android:layout_height="48dp"
-                android:text="Select"
-                android:layout_marginTop="8dp" />
+                android:id="@+id/buttonSelect2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vote Cocktail 2" />
         </LinearLayout>
-
     </LinearLayout>
-</FrameLayout>
+</ScrollView>
