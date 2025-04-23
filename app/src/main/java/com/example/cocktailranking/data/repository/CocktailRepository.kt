@@ -1,29 +1,40 @@
 package com.example.cocktailranking.data.repository
 
-import com.example.cocktailranking.network.CocktailApiService
+import android.util.Log
 import com.example.cocktailranking.data.database.CocktailDao
 import com.example.cocktailranking.data.database.model.Cocktail
-import com.example.cocktailranking.data.database.model.CocktailDto
+import com.example.cocktailranking.data.database.model.toEntity
+import com.example.cocktailranking.network.CocktailApiService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import kotlin.math.pow
 
 class CocktailRepository(
     private val dao: CocktailDao,
     private val apiService: CocktailApiService
 ) {
-    val allCocktails: Flow<List<Cocktail>> = dao.getAllCocktails()
+    val allCocktails: Flow<List<com.example.cocktailranking.data.database.model.Cocktail>> = dao.getAllCocktails()
 
-    suspend fun fetchCocktailById(apiId: String): CocktailDto {
-        return apiService.getCocktailById(apiId).drinks.first()
+    suspend fun fetchCocktailById(apiId: String): com.example.cocktailranking.network.model.Cocktail? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getCocktailById(apiId).execute()
+                if (response.isSuccessful) {
+                    response.body()?.drinks?.firstOrNull()
+                } else {
+                    Log.e("CocktailRepository", "API error: ${response.code()}")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("CocktailRepository", "Network request failed", e)
+                null
+            }
+        }
     }
 
-    suspend fun insertOrUpdateCocktail(dto: CocktailDto) {
-        val cocktail = Cocktail(
-            name = dto.name,
-            apiId = dto.apiId,
-            thumbnailUrl = dto.thumbnailUrl,
-            eloRating = 1000.0 // Default initial rating
-        )
+    suspend fun insertOrUpdateCocktail(networkCocktail: com.example.cocktailranking.network.model.Cocktail) {
+        val cocktail = networkCocktail.toEntity()
         dao.insertCocktail(cocktail)
     }
 
