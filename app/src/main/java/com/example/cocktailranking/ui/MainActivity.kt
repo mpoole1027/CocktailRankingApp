@@ -45,20 +45,19 @@ class MainActivity : AppCompatActivity()
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(navigationView, navController)
 
-        // Set up ActionBarDrawerToggle for the hamburger menu
-        val toggle = ActionBarDrawerToggle(
-            this,
-            drawerLayout,
-            toolbar,
-            R.string.open_drawer,
-            R.string.close_drawer
-        )
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val isTopLevel = destination.id == R.id.homeFragment || destination.id == R.id.rankingFragment
+
+            drawerLayout.setDrawerLockMode(
+                if (isTopLevel) DrawerLayout.LOCK_MODE_UNLOCKED
+                else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+            )
+        }
+
+
     }
 
-    override fun onSupportNavigateUp(): Boolean
-    {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+    override fun onSupportNavigateUp(): Boolean {
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
     }
 }
