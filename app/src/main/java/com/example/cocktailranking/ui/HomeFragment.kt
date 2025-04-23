@@ -118,13 +118,13 @@ class HomeFragment : Fragment() {
                 }
 
                 buttonSelect1.setOnClickListener {
+                    viewModel.vote(cocktails[0], cocktails[1])
                     viewModel.resetForVoting()
-                    // Later: viewModel.updateElo(winner = cocktails[0], loser = cocktails[1])
                 }
 
                 buttonSelect2.setOnClickListener {
+                    viewModel.vote(cocktails[1], cocktails[0])
                     viewModel.resetForVoting()
-                    // Later: viewModel.updateElo(winner = cocktails[1], loser = cocktails[0])
                 }
             }
         }

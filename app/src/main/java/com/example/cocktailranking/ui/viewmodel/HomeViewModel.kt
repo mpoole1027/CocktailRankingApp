@@ -49,6 +49,20 @@ class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
         refillQueueIfNeeded()
     }
 
+    fun vote(winner: com.example.cocktailranking.network.model.Cocktail, loser: com.example.cocktailranking.network.model.Cocktail) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val winnerEntity = winner.toEntity()
+                val loserEntity = loser.toEntity()
+                repository.updateElo(winnerEntity, loserEntity)
+                Log.d("HomeViewModel", "ELO updated for ${winner.strDrink} vs ${loser.strDrink}")
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Failed to update ELO: ${e.message}")
+            }
+        }
+    }
+
+
     private fun showNextPair() {
         if (cocktailQueue.size >= 2) {
             val nextPair = listOf(cocktailQueue.removeFirst(), cocktailQueue.removeFirst())
