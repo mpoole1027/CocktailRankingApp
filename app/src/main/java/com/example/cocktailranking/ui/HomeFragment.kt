@@ -8,19 +8,20 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.core.os.bundleOf
 import coil.load
 import com.example.cocktailranking.R
 import com.example.cocktailranking.viewmodel.HomeViewModel
+import com.example.cocktailranking.viewmodel.HomeViewModelFactory
+import com.example.cocktailranking.data.database.CocktailApp
 import coil.request.ImageRequest
-import coil.ImageLoader
 import coil.Coil
 
 class HomeFragment : Fragment() {
 
-    private val viewModel: HomeViewModel by viewModels()
+    private lateinit var viewModel: HomeViewModel
 
     private lateinit var image1: ImageView
     private lateinit var image2: ImageView
@@ -47,20 +48,22 @@ class HomeFragment : Fragment() {
         buttonSelect1 = view.findViewById(R.id.buttonSelect1)
         buttonSelect2 = view.findViewById(R.id.buttonSelect2)
 
-
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val repository = (requireActivity().application as CocktailApp).repository
+        val factory = HomeViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
+
         if (viewModel.cocktails.value == null || viewModel.cocktails.value?.size != 2) {
             viewModel.fetchInitialQueue()
         }
+
         viewModel.cocktails.observe(viewLifecycleOwner) { cocktails ->
             if (cocktails.size == 2) {
-                // Hide images until both are ready
                 image1.visibility = View.INVISIBLE
                 image2.visibility = View.INVISIBLE
-
                 var imagesLoaded = 0
 
                 fun tryDisplayBoth() {
@@ -76,33 +79,27 @@ class HomeFragment : Fragment() {
                 }
 
                 val context = requireContext()
-
                 val request1 = ImageRequest.Builder(context)
                     .data(cocktails[0].strDrinkThumb)
-                    .target(
-                        onSuccess = {
-                            image1.setImageDrawable(it)
-                            imagesLoaded++
-                            tryDisplayBoth()
-                        }
-                    )
+                    .target {
+                        image1.setImageDrawable(it)
+                        imagesLoaded++
+                        tryDisplayBoth()
+                    }
                     .build()
 
                 val request2 = ImageRequest.Builder(context)
                     .data(cocktails[1].strDrinkThumb)
-                    .target(
-                        onSuccess = {
-                            image2.setImageDrawable(it)
-                            imagesLoaded++
-                            tryDisplayBoth()
-                        }
-                    )
+                    .target {
+                        image2.setImageDrawable(it)
+                        imagesLoaded++
+                        tryDisplayBoth()
+                    }
                     .build()
 
                 Coil.imageLoader(context).enqueue(request1)
                 Coil.imageLoader(context).enqueue(request2)
 
-                // Show names immediately or delay them too if you want
                 name1.text = cocktails[0].strDrink
                 name2.text = cocktails[1].strDrink
 
@@ -121,17 +118,15 @@ class HomeFragment : Fragment() {
                 }
 
                 buttonSelect1.setOnClickListener {
-                    // TODO: Save ELO result
                     viewModel.resetForVoting()
+                    // Later: viewModel.updateElo(winner = cocktails[0], loser = cocktails[1])
                 }
 
                 buttonSelect2.setOnClickListener {
-                    // TODO: Save ELO result
                     viewModel.resetForVoting()
+                    // Later: viewModel.updateElo(winner = cocktails[1], loser = cocktails[0])
                 }
             }
         }
-
-
     }
 }

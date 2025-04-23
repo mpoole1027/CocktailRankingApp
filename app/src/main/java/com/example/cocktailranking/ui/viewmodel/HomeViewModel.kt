@@ -6,13 +6,18 @@ import androidx.lifecycle.ViewModel
 import com.example.cocktailranking.network.RetrofitClient
 import com.example.cocktailranking.network.model.Cocktail
 import com.example.cocktailranking.network.model.CocktailResponse
+import com.example.cocktailranking.data.repository.CocktailRepository
+import com.example.cocktailranking.data.database.model.toEntity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
+class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
 
-class HomeViewModel : ViewModel() {
     private val _cocktails = MutableLiveData<List<Cocktail>>()
     val cocktails: LiveData<List<Cocktail>> get() = _cocktails
 
@@ -64,9 +69,19 @@ class HomeViewModel : ViewModel() {
         RetrofitClient.apiService.getRandomCocktail().enqueue(object : Callback<CocktailResponse> {
             override fun onResponse(call: Call<CocktailResponse>, response: Response<CocktailResponse>) {
                 response.body()?.drinks?.firstOrNull()?.let { newCocktail ->
+
+                    // Save to Room (on IO thread)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            repository.insertOrUpdateCocktail(newCocktail)
+                        } catch (e: Exception) {
+                            Log.e("HomeViewModel", "Failed to save to DB: ${e.message}")
+                        }
+                    }
+
+                    // Enqueue if not already in the queue
                     if (cocktailQueue.none { it.idDrink == newCocktail.idDrink }) {
                         cocktailQueue.addLast(newCocktail)
-
                         Log.d("Queue", "Cocktail added: ${newCocktail.strDrink}. Queue size: ${cocktailQueue.size}")
 
                         if (_cocktails.value.isNullOrEmpty() && cocktailQueue.size >= 2) {
@@ -84,8 +99,4 @@ class HomeViewModel : ViewModel() {
             }
         })
     }
-
-
-
 }
-
