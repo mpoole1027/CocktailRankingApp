@@ -3,10 +3,12 @@ package com.example.cocktailranking.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import com.example.cocktailranking.network.RetrofitClient
-import com.example.cocktailranking.network.model.Cocktail
+import com.example.cocktailranking.network.model.Cocktail as NetworkCocktail
 import com.example.cocktailranking.network.model.CocktailResponse
 import com.example.cocktailranking.data.repository.CocktailRepository
+import com.example.cocktailranking.data.database.model.Cocktail as DbCocktail
 import com.example.cocktailranking.data.database.model.toEntity
 import retrofit2.Call
 import retrofit2.Callback
@@ -18,14 +20,15 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
 
-    private val _cocktails = MutableLiveData<List<Cocktail>>()
-    val cocktails: LiveData<List<Cocktail>> get() = _cocktails
+    private val _cocktails = MutableLiveData<List<NetworkCocktail>>()
+    val cocktails: LiveData<List<NetworkCocktail>> get() = _cocktails
 
-    private val cocktailQueue = ArrayDeque<Cocktail>()
+    val topCocktails: LiveData<List<DbCocktail>> = repository.topCocktails.asLiveData()
+
+    private val cocktailQueue = ArrayDeque<NetworkCocktail>()
     private val desiredQueueSize = 4
 
     fun fetchInitialQueue() {
-        // Only fill if needed
         if (cocktailQueue.size < desiredQueueSize) {
             val cocktailsToFetch = desiredQueueSize - cocktailQueue.size
             repeat(cocktailsToFetch) {
@@ -33,7 +36,6 @@ class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
             }
         }
 
-        // Show first 2 if not already shown
         if (_cocktails.value == null && cocktailQueue.size >= 2) {
             showNextPair()
         }
@@ -43,32 +45,36 @@ class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
         if (cocktailQueue.size >= 2) {
             showNextPair()
         } else {
-            _cocktails.postValue(emptyList()) // Optional: show loading state
+            _cocktails.postValue(emptyList())
         }
 
         refillQueueIfNeeded()
     }
 
-    fun vote(winner: com.example.cocktailranking.network.model.Cocktail, loser: com.example.cocktailranking.network.model.Cocktail) {
+    fun vote(winner: NetworkCocktail, loser: NetworkCocktail) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val winnerEntity = winner.toEntity()
-                val loserEntity = loser.toEntity()
-                repository.updateElo(winnerEntity, loserEntity)
-                Log.d("HomeViewModel", "ELO updated for ${winner.strDrink} vs ${loser.strDrink}")
+                val winnerFromDb = repository.getCocktailByApiId(winner.idDrink)
+                val loserFromDb = repository.getCocktailByApiId(loser.idDrink)
+
+                if (winnerFromDb != null && loserFromDb != null) {
+                    repository.updateElo(winnerFromDb, loserFromDb)
+                    Log.d("HomeViewModel", "ELO updated for ${winner.strDrink} vs ${loser.strDrink}")
+                } else {
+                    Log.e("HomeViewModel", "One or both cocktails not found in DB")
+                }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Failed to update ELO: ${e.message}")
             }
         }
     }
 
-
     private fun showNextPair() {
         if (cocktailQueue.size >= 2) {
             val nextPair = listOf(cocktailQueue.removeFirst(), cocktailQueue.removeFirst())
             _cocktails.postValue(nextPair)
         } else {
-            _cocktails.postValue(emptyList()) // fallback, should rarely happen
+            _cocktails.postValue(emptyList())
         }
     }
 
@@ -84,7 +90,6 @@ class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
             override fun onResponse(call: Call<CocktailResponse>, response: Response<CocktailResponse>) {
                 response.body()?.drinks?.firstOrNull()?.let { newCocktail ->
 
-                    // Save to Room (on IO thread)
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             repository.insertOrUpdateCocktail(newCocktail)
@@ -93,7 +98,6 @@ class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
                         }
                     }
 
-                    // Enqueue if not already in the queue
                     if (cocktailQueue.none { it.idDrink == newCocktail.idDrink }) {
                         cocktailQueue.addLast(newCocktail)
                         Log.d("Queue", "Cocktail added: ${newCocktail.strDrink}. Queue size: ${cocktailQueue.size}")
@@ -103,7 +107,7 @@ class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
                             showNextPair()
                         }
                     } else {
-                        fetchOneRandomCocktail()
+                        fetchOneRandomCocktail() // avoid duplicate
                     }
                 }
             }

@@ -7,17 +7,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.core.os.bundleOf
+import coil.Coil
 import coil.load
+import coil.request.ImageRequest
 import com.example.cocktailranking.R
+import com.example.cocktailranking.data.database.CocktailApp
 import com.example.cocktailranking.viewmodel.HomeViewModel
 import com.example.cocktailranking.viewmodel.HomeViewModelFactory
-import com.example.cocktailranking.data.database.CocktailApp
-import coil.request.ImageRequest
-import coil.Coil
 
 class HomeFragment : Fragment() {
 
@@ -31,6 +32,8 @@ class HomeFragment : Fragment() {
     private lateinit var moreInfo2: Button
     private lateinit var buttonSelect1: Button
     private lateinit var buttonSelect2: Button
+
+    private var previousTopCocktails: List<String> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +61,15 @@ class HomeFragment : Fragment() {
 
         if (viewModel.cocktails.value == null || viewModel.cocktails.value?.size != 2) {
             viewModel.fetchInitialQueue()
+        }
+
+        // Observe top 20 for changes
+        viewModel.topCocktails.observe(viewLifecycleOwner) { cocktails ->
+            val currentIds = cocktails.map { it.apiId }
+            if (previousTopCocktails.isNotEmpty() && currentIds != previousTopCocktails) {
+                Toast.makeText(requireContext(), "Top 20 cocktails updated!", Toast.LENGTH_SHORT).show()
+            }
+            previousTopCocktails = currentIds
         }
 
         viewModel.cocktails.observe(viewLifecycleOwner) { cocktails ->
