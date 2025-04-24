@@ -21,4 +21,7 @@ interface CocktailDao {
     @Query("SELECT * FROM cocktails WHERE apiId = :apiId LIMIT 1")
     suspend fun getCocktailByApiId(apiId: String): Cocktail?
 
+    @Query("DELETE FROM cocktails")
+    suspend fun clearAllCocktails()
+
 }
