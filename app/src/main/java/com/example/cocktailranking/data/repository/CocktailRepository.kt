@@ -37,9 +37,21 @@ class CocktailRepository(
     }
 
     suspend fun insertOrUpdateCocktail(networkCocktail: com.example.cocktailranking.network.model.Cocktail) {
-        val cocktail = networkCocktail.toEntity()
-        dao.insertCocktail(cocktail)
+        val existing = dao.getCocktailByApiId(networkCocktail.idDrink)
+        if (existing == null) {
+            val cocktail = networkCocktail.toEntity() // sets ELO to 1000
+            dao.insertCocktail(cocktail)
+        } else {
+            // Skip reinsertion so ELO isn't reset
+            Log.d("CocktailRepository", "Cocktail ${existing.name} already in DB with ELO ${existing.eloRating}")
+        }
     }
+
+    suspend fun clearAll() {
+        dao.clearAllCocktails()
+    }
+
+
 
     suspend fun getCocktailByApiId(apiId: String): Cocktail? {
         return dao.getCocktailByApiId(apiId)

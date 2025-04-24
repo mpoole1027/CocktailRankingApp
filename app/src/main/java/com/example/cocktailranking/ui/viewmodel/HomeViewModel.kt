@@ -58,8 +58,16 @@ class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
                 val loserFromDb = repository.getCocktailByApiId(loser.idDrink)
 
                 if (winnerFromDb != null && loserFromDb != null) {
+                    val oldWinnerElo = winnerFromDb.eloRating
+                    val oldLoserElo = loserFromDb.eloRating
+
                     repository.updateElo(winnerFromDb, loserFromDb)
-                    Log.d("HomeViewModel", "ELO updated for ${winner.strDrink} vs ${loser.strDrink}")
+
+                    val updatedWinner = repository.getCocktailByApiId(winner.idDrink)
+                    val updatedLoser = repository.getCocktailByApiId(loser.idDrink)
+
+                    Log.d("ELO_UPDATE", "${winner.strDrink}: $oldWinnerElo → ${updatedWinner?.eloRating}")
+                    Log.d("ELO_UPDATE", "${loser.strDrink}: $oldLoserElo → ${updatedLoser?.eloRating}")
                 } else {
                     Log.e("HomeViewModel", "One or both cocktails not found in DB")
                 }
@@ -68,6 +76,7 @@ class HomeViewModel(private val repository: CocktailRepository) : ViewModel() {
             }
         }
     }
+
 
     private fun showNextPair() {
         if (cocktailQueue.size >= 2) {

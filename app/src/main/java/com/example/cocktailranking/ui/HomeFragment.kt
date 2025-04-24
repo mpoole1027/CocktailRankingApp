@@ -32,6 +32,8 @@ class HomeFragment : Fragment() {
     private lateinit var moreInfo2: Button
     private lateinit var buttonSelect1: Button
     private lateinit var buttonSelect2: Button
+    private lateinit var buttonClearDatabase: Button
+
 
     private var previousTopCocktails: List<String> = emptyList()
 
@@ -50,6 +52,8 @@ class HomeFragment : Fragment() {
         moreInfo2 = view.findViewById(R.id.moreInfo2)
         buttonSelect1 = view.findViewById(R.id.buttonSelect1)
         buttonSelect2 = view.findViewById(R.id.buttonSelect2)
+        //buttonClearDatabase = view.findViewById(R.id.buttonClearDatabase)
+
 
         return view
     }
@@ -140,5 +144,6 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+
     }
 }
