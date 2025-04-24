@@ -11,15 +11,13 @@ import com.google.android.material.navigation.NavigationView
 import com.example.cocktailranking.R
 import androidx.appcompat.app.ActionBarDrawerToggle
 
-class MainActivity : AppCompatActivity()
-{
+class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -35,9 +33,13 @@ class MainActivity : AppCompatActivity()
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // AppBarConfiguration setup
+        // ✅ AppBarConfiguration now includes searchFragment
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.homeFragment, R.id.rankingFragment),
+            setOf(
+                R.id.homeFragment,
+                R.id.rankingFragment,
+                R.id.searchFragment // <-- added this!
+            ),
             drawerLayout
         )
 
@@ -46,15 +48,15 @@ class MainActivity : AppCompatActivity()
         NavigationUI.setupWithNavController(navigationView, navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            val isTopLevel = destination.id == R.id.homeFragment || destination.id == R.id.rankingFragment
+            val isTopLevel = destination.id == R.id.homeFragment ||
+                    destination.id == R.id.rankingFragment ||
+                    destination.id == R.id.searchFragment // <-- include here too
 
             drawerLayout.setDrawerLockMode(
                 if (isTopLevel) DrawerLayout.LOCK_MODE_UNLOCKED
                 else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
             )
         }
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
