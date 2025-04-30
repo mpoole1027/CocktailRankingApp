@@ -11,46 +11,52 @@ import com.google.android.material.navigation.NavigationView
 import com.example.cocktailranking.R
 import androidx.appcompat.app.ActionBarDrawerToggle
 
-class MainActivity : AppCompatActivity() {
+// Main activity that hosts the navigation drawer and fragments
+class MainActivity : AppCompatActivity()
+{
 
+    // Navigation and layout components
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    // Called when activity is created
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Toolbar setup
+        // Set up the toolbar
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // DrawerLayout setup
+        // Initialize drawer and navigation view
         drawerLayout = findViewById(R.id.drawer_layout)
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
 
-        // NavController setup
+        // Get NavController from NavHostFragment
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // ✅ AppBarConfiguration now includes searchFragment
+        // Define top-level destinations for navigation drawer
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.homeFragment,
                 R.id.rankingFragment,
-                R.id.searchFragment // <-- added this!
+                R.id.searchFragment
             ),
             drawerLayout
         )
 
-        // Link NavController with Toolbar and NavigationView
+        // Connect NavController to toolbar and drawer navigation
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(navigationView, navController)
 
+        // Lock drawer when not on top-level destinations
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val isTopLevel = destination.id == R.id.homeFragment ||
                     destination.id == R.id.rankingFragment ||
-                    destination.id == R.id.searchFragment // <-- include here too
+                    destination.id == R.id.searchFragment
 
             drawerLayout.setDrawerLockMode(
                 if (isTopLevel) DrawerLayout.LOCK_MODE_UNLOCKED
@@ -59,7 +65,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
+    // Enable up button support
+    override fun onSupportNavigateUp(): Boolean
+    {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
     }
 }

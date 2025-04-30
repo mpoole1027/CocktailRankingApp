@@ -20,10 +20,13 @@ import com.example.cocktailranking.data.database.CocktailApp
 import com.example.cocktailranking.viewmodel.HomeViewModel
 import com.example.cocktailranking.viewmodel.HomeViewModelFactory
 
+// Fragment to display and handle cocktail voting UI
 class HomeFragment : Fragment() {
 
+    // ViewModel reference
     private lateinit var viewModel: HomeViewModel
 
+    // UI components
     private lateinit var image1: ImageView
     private lateinit var image2: ImageView
     private lateinit var name1: TextView
@@ -34,14 +37,16 @@ class HomeFragment : Fragment() {
     private lateinit var buttonSelect2: Button
     private lateinit var buttonClearDatabase: Button
 
-
+    // Used to track previous top cocktails for change detection
     private var previousTopCocktails: List<String> = emptyList()
 
+    // Inflate layout and bind views
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View
+    {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         image1 = view.findViewById(R.id.cocktailImage1)
@@ -52,38 +57,49 @@ class HomeFragment : Fragment() {
         moreInfo2 = view.findViewById(R.id.moreInfo2)
         buttonSelect1 = view.findViewById(R.id.buttonSelect1)
         buttonSelect2 = view.findViewById(R.id.buttonSelect2)
-        //buttonClearDatabase = view.findViewById(R.id.buttonClearDatabase)
-
 
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    // Initialize ViewModel and set up observers
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        // Set up ViewModel using factory
         val repository = (requireActivity().application as CocktailApp).repository
         val factory = HomeViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
 
-        if (viewModel.cocktails.value == null || viewModel.cocktails.value?.size != 2) {
+        // Load initial cocktail pair if needed
+        if (viewModel.cocktails.value == null || viewModel.cocktails.value?.size != 2)
+        {
             viewModel.fetchInitialQueue()
         }
 
-        // Observe top 20 for changes
-        viewModel.topCocktails.observe(viewLifecycleOwner) { cocktails ->
+        // Observe top 20 list for changes
+        viewModel.topCocktails.observe(viewLifecycleOwner)
+        { cocktails ->
             val currentIds = cocktails.map { it.apiId }
-            if (previousTopCocktails.isNotEmpty() && currentIds != previousTopCocktails) {
+            if (previousTopCocktails.isNotEmpty() && currentIds != previousTopCocktails)
+            {
                 Toast.makeText(requireContext(), "Top 20 cocktails updated!", Toast.LENGTH_SHORT).show()
             }
             previousTopCocktails = currentIds
         }
 
-        viewModel.cocktails.observe(viewLifecycleOwner) { cocktails ->
+        // Observe cocktail pair for voting
+        viewModel.cocktails.observe(viewLifecycleOwner)
+        { cocktails ->
             if (cocktails.size == 2) {
+                // Hide images initially
                 image1.visibility = View.INVISIBLE
                 image2.visibility = View.INVISIBLE
                 var imagesLoaded = 0
 
-                fun tryDisplayBoth() {
-                    if (imagesLoaded == 2) {
+                // Fade in both images once loaded
+                fun tryDisplayBoth()
+                {
+                    if (imagesLoaded == 2)
+                    {
                         image1.alpha = 0f
                         image2.alpha = 0f
                         image1.visibility = View.VISIBLE
@@ -94,6 +110,7 @@ class HomeFragment : Fragment() {
                     }
                 }
 
+                // Load cocktail images using Coil
                 val context = requireContext()
                 val request1 = ImageRequest.Builder(context)
                     .data(cocktails[0].strDrinkThumb)
@@ -116,9 +133,11 @@ class HomeFragment : Fragment() {
                 Coil.imageLoader(context).enqueue(request1)
                 Coil.imageLoader(context).enqueue(request2)
 
+                // Set cocktail names
                 name1.text = cocktails[0].strDrink
                 name2.text = cocktails[1].strDrink
 
+                // Navigate to details on "More Info" button click
                 moreInfo1.setOnClickListener {
                     findNavController().navigate(
                         R.id.cocktailDetailFragment,
@@ -133,17 +152,19 @@ class HomeFragment : Fragment() {
                     )
                 }
 
+                // Handle vote for first cocktail
                 buttonSelect1.setOnClickListener {
                     viewModel.vote(cocktails[0], cocktails[1])
                     viewModel.resetForVoting()
                 }
 
+                // Handle vote for second cocktail
                 buttonSelect2.setOnClickListener {
                     viewModel.vote(cocktails[1], cocktails[0])
                     viewModel.resetForVoting()
                 }
             }
         }
-
     }
 }
+

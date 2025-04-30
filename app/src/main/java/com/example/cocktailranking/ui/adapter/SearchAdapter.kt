@@ -7,39 +7,55 @@ import coil.load
 import com.example.cocktailranking.databinding.ItemSearchResultBinding
 import com.example.cocktailranking.network.model.Cocktail
 
+// RecyclerView Adapter for displaying search results
 class SearchAdapter(
-    private val onItemClick: (Cocktail) -> Unit
-) : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
+    private val onItemClick: (Cocktail) -> Unit // Callback for item click
+) : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>()
+{
 
+    // List of cocktails to display
     private var items: List<Cocktail> = emptyList()
 
-    fun submitList(list: List<Cocktail>) {
+    // Updates the list and refreshes the view
+    fun submitList(list: List<Cocktail>)
+    {
         items = list
         notifyDataSetChanged()
     }
 
+    // ViewHolder for each search result item
     inner class SearchViewHolder(private val binding: ItemSearchResultBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(cocktail: Cocktail) {
+        RecyclerView.ViewHolder(binding.root)
+    {
+
+        // Binds cocktail data to the view
+        fun bind(cocktail: Cocktail)
+        {
             binding.cocktailName.text = cocktail.strDrink
             binding.cocktailImage.load(cocktail.strDrinkThumb)
 
+            // Handle item click
             binding.root.setOnClickListener {
                 onItemClick(cocktail)
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
+    // Creates a new ViewHolder
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder
+    {
         val binding = ItemSearchResultBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return SearchViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
+    // Binds data to the ViewHolder
+    override fun onBindViewHolder(holder: SearchViewHolder, position: Int)
+    {
         holder.bind(items[position])
     }
 
+    // Returns total number of items
     override fun getItemCount(): Int = items.size
 }

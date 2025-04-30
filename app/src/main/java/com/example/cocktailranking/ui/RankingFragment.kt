@@ -16,31 +16,44 @@ import com.example.cocktailranking.viewmodel.RankingViewModel
 import com.example.cocktailranking.viewmodel.RankingViewModelFactory
 import com.example.cocktailranking.data.database.CocktailApp
 
-class RankingFragment : Fragment() {
+// Fragment to display top-ranked cocktails in a RecyclerView
+class RankingFragment : Fragment()
+{
 
+    // View binding for fragment_ranking.xml
     private var _binding: FragmentRankingBinding? = null
     private val binding get() = _binding!!
 
+    // ViewModel to access top cocktail data
     private lateinit var viewModel: RankingViewModel
 
+    // Inflate layout and initialize binding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View
+    {
         _binding = FragmentRankingBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    // Set up ViewModel and RecyclerView after view is created
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        // Initialize repository and ViewModel with factory
         val repository = (requireActivity().application as CocktailApp).repository
         val factory = RankingViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[RankingViewModel::class.java]
 
+        // Set RecyclerView layout to vertical list
         binding.rankingRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.topCocktails.observe(viewLifecycleOwner) { cocktails ->
+        // Observe top cocktails and populate RecyclerView with adapter
+        viewModel.topCocktails.observe(viewLifecycleOwner)
+        { cocktails ->
             binding.rankingRecyclerView.adapter = CocktailAdapter(cocktails) { cocktail ->
+                // Navigate to detail screen on item click
                 findNavController().navigate(
                     R.id.cocktailDetailFragment,
                     bundleOf("cocktailId" to cocktail.apiId)
@@ -49,8 +62,11 @@ class RankingFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
+    // Clear binding reference to prevent memory leaks
+    override fun onDestroyView()
+    {
         super.onDestroyView()
         _binding = null
     }
 }
+
