@@ -111,8 +111,3 @@ Contributions are welcome! If you find bugs or have suggestions for improvements
 
 This project is open-source and available under the [MIT License](LICENSE).
 
----
-
-## Contact
-
-For questions or feedback, feel free to reach out to the project maintainer: [@mpoole1027](https://github.com/mpoole1027)
